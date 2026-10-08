@@ -2,8 +2,8 @@
 "use client";
 
 import { signIn } from "next-auth/react";
-import { useState } from "react";
 import { useSearchParams } from "next/navigation";
+import { useState } from "react";
 
 export default function LoginForm() {
   const searchParams = useSearchParams();
@@ -12,6 +12,7 @@ export default function LoginForm() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [pending, setPending] = useState(false);
+  const [googlePending, setGooglePending] = useState(false);
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -35,22 +36,69 @@ export default function LoginForm() {
     window.location.assign(result.url || callbackUrl);
   }
 
+  async function handleGoogleSignIn() {
+    setError("");
+    setGooglePending(true);
+
+    await signIn("google", { callbackUrl });
+  }
+
   return (
-    <form onSubmit={handleSubmit} className="space-y-5">
-      <div>
-        <label htmlFor="email" className="label"><span className="label-text">Email</span></label>
-        <input id="email" name="email" type="email" autoComplete="email" required value={email}
-          onChange={(event) => setEmail(event.target.value)} className="input input-bordered w-full" />
-      </div>
-      <div>
-        <label htmlFor="password" className="label"><span className="label-text">Password</span></label>
-        <input id="password" name="password" type="password" autoComplete="current-password" required value={password}
-          onChange={(event) => setPassword(event.target.value)} className="input input-bordered w-full" />
-      </div>
-      {error && <div role="alert" className="alert alert-error"><span>{error}</span></div>}
-      <button type="submit" className="btn btn-primary w-full" disabled={pending}>
-        {pending ? "Signing in..." : "Sign in"}
+    <div className="space-y-5">
+      <form onSubmit={handleSubmit} className="space-y-5">
+        <div>
+          <label htmlFor="email" className="label">
+            <span className="label-text">Email</span>
+          </label>
+          <input
+            id="email"
+            name="email"
+            type="email"
+            autoComplete="email"
+            required
+            value={email}
+            onChange={(event) => setEmail(event.target.value)}
+            className="input input-bordered w-full"
+          />
+        </div>
+
+        <div>
+          <label htmlFor="password" className="label">
+            <span className="label-text">Password</span>
+          </label>
+          <input
+            id="password"
+            name="password"
+            type="password"
+            autoComplete="current-password"
+            required
+            value={password}
+            onChange={(event) => setPassword(event.target.value)}
+            className="input input-bordered w-full"
+          />
+        </div>
+
+        {error && (
+          <div role="alert" className="alert alert-error">
+            <span>{error}</span>
+          </div>
+        )}
+
+        <button type="submit" className="btn btn-primary w-full" disabled={pending || googlePending}>
+          {pending ? "Signing in..." : "Sign in"}
+        </button>
+      </form>
+
+      <div className="divider">OR</div>
+
+      <button
+        type="button"
+        className="btn btn-outline w-full"
+        onClick={handleGoogleSignIn}
+        disabled={pending || googlePending}
+      >
+        {googlePending ? "Connecting to Google..." : "Continue with Google"}
       </button>
-    </form>
+    </div>
   );
 }
