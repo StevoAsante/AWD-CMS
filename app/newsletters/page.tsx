@@ -18,7 +18,6 @@ export default async function NewslettersPage() {
             <h1 className="mt-2 text-4xl font-bold">Newsletters</h1>
             <p className="text-base-content/60">Public newsletters that have been sent.</p>
           </div>
-          <Link href="/dashboard" className="btn btn-outline">Dashboard</Link>
         </div>
 
         {newsletters.length === 0 ? (
