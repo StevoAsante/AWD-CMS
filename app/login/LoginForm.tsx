@@ -8,11 +8,19 @@ import { useState } from "react";
 export default function LoginForm() {
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get("callbackUrl") || "/dashboard";
+  const authError = searchParams.get("error");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [pending, setPending] = useState(false);
   const [googlePending, setGooglePending] = useState(false);
+
+  const authErrorMessage =
+    authError === "OAuthAccountNotLinked"
+      ? "This Google account is already associated with a different sign-in method."
+      : authError
+        ? "Sign-in could not be completed. Please try again."
+        : "";
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -78,9 +86,9 @@ export default function LoginForm() {
           />
         </div>
 
-        {error && (
+        {(error || authErrorMessage) && (
           <div role="alert" className="alert alert-error">
-            <span>{error}</span>
+            <span>{error || authErrorMessage}</span>
           </div>
         )}
 
