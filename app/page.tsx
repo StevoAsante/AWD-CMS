@@ -1,4 +1,6 @@
 // file: app/page.tsx
+import Link from "next/link";
+
 export default function HomePage() {
   return (
     <main className="min-h-screen bg-base-200 px-6 py-16">
@@ -15,12 +17,13 @@ export default function HomePage() {
                 Next.js, TypeScript, PostgreSQL, Prisma and Auth.js.
               </p>
               <div className="flex justify-center gap-3">
-                <a href="/newsletters" className="btn btn-primary">
+                {/* Link keeps navigation inside the Next.js app. */}
+                <Link href="/newsletters" className="btn btn-primary">
                   View newsletters
-                </a>
-                <a href="/login" className="btn btn-outline">
+                </Link>
+                <Link href="/login" className="btn btn-outline">
                   Login
-                </a>
+                </Link>
               </div>
             </div>
           </div>
