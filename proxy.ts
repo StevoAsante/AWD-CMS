@@ -2,7 +2,7 @@
 import { auth } from "@/auth";
 
 // Check dashboard requests before they reach the page.
-export const proxy = auth;
+export { auth as proxy };
 
 export const config = {
   matcher: ["/dashboard/:path*"],
