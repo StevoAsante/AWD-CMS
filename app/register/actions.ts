@@ -31,9 +31,23 @@ export async function registerUser(
 
   const passwordHash = await hashPassword(password);
 
-  await prisma.user.create({
-    data: { email, name: name || null, password: passwordHash },
-  });
+  try {
+    await prisma.user.create({
+      data: { email, name: name || null, password: passwordHash },
+    });
+  } catch (error) {
+    // The unique constraint also protects against two registrations arriving together.
+    if (
+      typeof error === "object" &&
+      error !== null &&
+      "code" in error &&
+      error.code === "P2002"
+    ) {
+      return { error: "An account with that email already exists." };
+    }
+
+    return { error: "Your account could not be created. Please try again." };
+  }
 
   return { success: true };
 }
