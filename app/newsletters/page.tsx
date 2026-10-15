@@ -1,4 +1,5 @@
 // file: app/newsletters/page.tsx
+import Image from "next/image";
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 
@@ -31,7 +32,16 @@ export default async function NewslettersPage() {
           <div className="grid gap-6 md:grid-cols-2">
             {newsletters.map((newsletter) => (
               <article key={newsletter.id} className="card overflow-hidden bg-base-100 shadow-xl">
-                {newsletter.image && <img src={newsletter.image} alt="" className="h-52 w-full object-cover" />}
+                {newsletter.image && (
+                  <Image
+                    src={newsletter.image}
+                    alt=""
+                    width={1200}
+                    height={600}
+                    unoptimized
+                    className="h-52 w-full object-cover"
+                  />
+                )}
                 <div className="card-body">
                   <p className="text-sm text-base-content/50">{newsletter.createdAt.toLocaleDateString()}</p>
                   <h2 className="card-title">{newsletter.title}</h2>
