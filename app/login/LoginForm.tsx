@@ -5,9 +5,30 @@ import { signIn } from "next-auth/react";
 import { useSearchParams } from "next/navigation";
 import { useState } from "react";
 
+function getSafeCallbackUrl(value: string | null): string {
+  if (!value) return "/dashboard";
+
+  try {
+    // Resolve the requested path against a fixed origin so external redirects are rejected.
+    const requestedUrl = new URL(value, "https://awd-cms.invalid");
+
+    if (
+      requestedUrl.origin !== "https://awd-cms.invalid" ||
+      !value.startsWith("/") ||
+      value.startsWith("//")
+    ) {
+      return "/dashboard";
+    }
+
+    return `${requestedUrl.pathname}${requestedUrl.search}${requestedUrl.hash}`;
+  } catch {
+    return "/dashboard";
+  }
+}
+
 export default function LoginForm() {
   const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get("callbackUrl") || "/dashboard";
+  const callbackUrl = getSafeCallbackUrl(searchParams.get("callbackUrl"));
   const authError = searchParams.get("error");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -27,28 +48,37 @@ export default function LoginForm() {
     setError("");
     setPending(true);
 
-    const result = await signIn("credentials", {
-      email,
-      password,
-      redirect: false,
-      callbackUrl,
-    });
+    try {
+      const result = await signIn("credentials", {
+        email,
+        password,
+        redirect: false,
+        callbackUrl,
+      });
 
-    setPending(false);
+      if (!result?.ok) {
+        setError("Invalid email or password.");
+        return;
+      }
 
-    if (!result?.ok) {
-      setError("Invalid email or password.");
-      return;
+      window.location.assign(result.url || callbackUrl);
+    } catch {
+      setError("Sign-in could not be completed. Please try again.");
+    } finally {
+      setPending(false);
     }
-
-    window.location.assign(result.url || callbackUrl);
   }
 
   async function handleGoogleSignIn() {
     setError("");
     setGooglePending(true);
 
-    await signIn("google", { callbackUrl });
+    try {
+      await signIn("google", { callbackUrl });
+    } catch {
+      setError("Google sign-in could not be completed. Please try again.");
+      setGooglePending(false);
+    }
   }
 
   return (
