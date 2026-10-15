@@ -1,4 +1,5 @@
 // file: app/newsletters/[id]/page.tsx
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
@@ -21,7 +22,16 @@ export default async function NewsletterPage({
       <article className="mx-auto max-w-3xl">
         <Link href="/newsletters" className="link link-primary">← Back to newsletters</Link>
         <div className="card mt-6 overflow-hidden bg-base-100 shadow-xl">
-          {newsletter.image && <img src={newsletter.image} alt="" className="max-h-[28rem] w-full object-cover" />}
+          {newsletter.image && (
+            <Image
+              src={newsletter.image}
+              alt=""
+              width={1200}
+              height={800}
+              unoptimized
+              className="max-h-[28rem] w-full object-cover"
+            />
+          )}
           <div className="card-body p-8">
             <p className="text-sm text-base-content/50">{newsletter.createdAt.toLocaleDateString()}</p>
             <h1 className="text-4xl font-bold">{newsletter.title}</h1>
