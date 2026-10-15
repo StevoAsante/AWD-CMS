@@ -26,7 +26,11 @@ function getSafeCallbackUrl(value: string | null): string {
   }
 }
 
-export default function LoginForm() {
+export default function LoginForm({
+  showGoogleSignIn,
+}: {
+  showGoogleSignIn: boolean;
+}) {
   const searchParams = useSearchParams();
   const callbackUrl = getSafeCallbackUrl(searchParams.get("callbackUrl"));
   const authError = searchParams.get("error");
@@ -127,16 +131,19 @@ export default function LoginForm() {
         </button>
       </form>
 
-      <div className="divider">OR</div>
-
-      <button
-        type="button"
-        className="btn btn-outline w-full"
-        onClick={handleGoogleSignIn}
-        disabled={pending || googlePending}
-      >
-        {googlePending ? "Connecting to Google..." : "Continue with Google"}
-      </button>
+      {showGoogleSignIn && (
+        <>
+          <div className="divider">OR</div>
+          <button
+            type="button"
+            className="btn btn-outline w-full"
+            onClick={handleGoogleSignIn}
+            disabled={pending || googlePending}
+          >
+            {googlePending ? "Connecting to Google..." : "Continue with Google"}
+          </button>
+        </>
+      )}
     </div>
   );
 }
