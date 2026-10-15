@@ -66,15 +66,9 @@ export async function updateNewsletter(
     return { error: result.error.issues[0]?.message ?? "Please check the newsletter details." };
   }
 
-  const existing = await prisma.newsletter.findFirst({
+  // Keep the ownership check in the update itself, rather than relying on an earlier lookup.
+  const updated = await prisma.newsletter.updateMany({
     where: { id, authorId },
-    select: { id: true },
-  });
-
-  if (!existing) return { error: "Newsletter not found." };
-
-  await prisma.newsletter.update({
-    where: { id: existing.id },
     data: {
       title: result.data.title,
       content: result.data.content,
@@ -82,6 +76,8 @@ export async function updateNewsletter(
       status: result.data.status,
     },
   });
+
+  if (updated.count === 0) return { error: "Newsletter not found." };
 
   redirect("/dashboard");
 }
