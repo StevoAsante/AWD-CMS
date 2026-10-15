@@ -1,5 +1,6 @@
 // file: app/login/page.tsx
 import Link from "next/link";
+import { Suspense } from "react";
 import LoginForm from "./LoginForm";
 
 export default function LoginPage() {
@@ -16,7 +17,11 @@ export default function LoginPage() {
             <Link href="/" className="text-sm font-medium text-primary">← Back to home</Link>
             <h1 className="card-title text-3xl">Log in</h1>
             <p className="text-base-content/60">Sign in to manage your newsletters.</p>
-            <LoginForm showGoogleSignIn={googleSignInEnabled} />
+            <Suspense
+              fallback={<p className="py-4 text-center text-sm text-base-content/60">Loading sign-in form...</p>}
+            >
+              <LoginForm showGoogleSignIn={googleSignInEnabled} />
+            </Suspense>
             <p className="text-center text-sm text-base-content/60">
               Need an account?{" "}
               <Link href="/register" className="link link-primary">Create one</Link>
